@@ -1,0 +1,41 @@
+import { configureStore, createSlice, type PayloadAction } from "@reduxjs/toolkit";
+
+interface {{pascalName}}State {
+{{#each fields}}
+  {{name}}: {{type}};
+{{/each}}
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: {{pascalName}}State = {
+{{#each fields}}
+  {{name}}: {{defaultValue}},
+{{/each}}
+  loading: false,
+  error: null,
+};
+
+const {{camelName}}Slice = createSlice({
+  name: "{{kebabName}}",
+  initialState,
+  reducers: {
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload;
+    },
+    setError(state, action: PayloadAction<string | null>) {
+      state.error = action.payload;
+    },
+  },
+});
+
+export const { setLoading, setError } = {{camelName}}Slice.actions;
+
+export const {{camelName}}Store = configureStore({
+  reducer: {
+    {{kebabName}}: {{camelName}}Slice.reducer,
+  },
+});
+
+export type RootState = ReturnType<typeof {{camelName}}Store.getState>;
+export type AppDispatch = typeof {{camelName}}Store.dispatch;

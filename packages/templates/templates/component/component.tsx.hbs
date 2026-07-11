@@ -1,0 +1,26 @@
+{{#if tailwind}}
+import { cn } from "{{#if shadcn}}@/lib/utils{{else}}../utils/cn{{/if}}";
+{{/if}}
+{{#if styledComponents}}
+import styled from "styled-components";
+{{/if}}
+{{#if cssModule}}
+import styles from "./{{name}}.module.css";
+{{/if}}
+{{#if withStorybook}}
+import type { Meta, StoryObj } from "@storybook/react";
+{{/if}}
+{{> componentInterface}}
+
+{{> componentProps}}
+
+export function {{pascalName}}({{{#if styledComponents}}}
+  className,
+  ...props
+}: {{pascalName}}Props) {
+  return (
+    <{{#if styledComponents}}Styled{{pascalName}}{{else}}div{{/if}}{{#if cssModule}} className={styles.container}{{else if tailwind}} className={cn("", className)}{{else if styledComponents}} className={className}{{/if}} {...props}>
+      {{pascalName}}
+    </{{#if styledComponents}}{{pascalName}}{{else}}div{{/if}}>
+  );
+}

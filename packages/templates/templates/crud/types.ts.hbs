@@ -1,0 +1,8 @@
+export interface {{pascalName}} {
+{{#each fields}}
+  {{name}}: {{tsType}};
+{{/each}}
+}
+
+export type Create{{pascalName}}Input = Omit<{{pascalName}}{{#if hasId}}, "id"{{/if}}{{#if hasCreatedAt}}, "createdAt"{{/if}}{{#if hasUpdatedAt}}, "updatedAt"{{/if}}>;
+export type Update{{pascalName}}Input = Partial<Create{{pascalName}}Input>;

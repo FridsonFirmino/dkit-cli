@@ -1,0 +1,103 @@
+import { useState, useCallback } from "react";
+
+{{#if (eq type "fetch")}}
+interface Use{{pascalName}}Options {
+  url: string;
+  method?: string;
+}
+
+interface Use{{pascalName}}Result<T> {
+  data: T | null;
+  loading: boolean;
+  error: Error | null;
+  execute: (body?: unknown) => Promise<void>;
+}
+
+export function use{{pascalName}}<T = unknown>(options: Use{{pascalName}}Options): Use{{pascalName}}Result<T> {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  const execute = useCallback(async (body?: unknown) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(options.url, {
+        method: options.method ?? "GET",
+        headers: { "Content-Type": "application/json" },
+        body: body ? JSON.stringify(body) : undefined,
+      });
+      const json = await response.json();
+      setData(json);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Unknown error"));
+    } finally {
+      setLoading(false);
+    }
+  }, [options.url, options.method]);
+
+  return { data, loading, error, execute };
+}
+{{else if (eq type "pagination")}}
+interface Use{{pascalName}}Options {
+  initialPage?: number;
+  pageSize?: number;
+}
+
+export function use{{pascalName}}(options: Use{{pascalName}}Options = {}) {
+  const { initialPage = 1, pageSize = 10 } = options;
+  const [page, setPage] = useState(initialPage);
+  const [total, setTotal] = useState(0);
+
+  const totalPages = Math.ceil(total / pageSize);
+  const hasNext = page < totalPages;
+  const hasPrev = page > 1;
+
+  const nextPage = useCallback(() => setPage((p) => Math.min(p + 1, totalPages)), [totalPages]);
+  const prevPage = useCallback(() => setPage((p) => Math.max(p - 1, 1)), []);
+
+  return { page, pageSize, total, totalPages, hasNext, hasPrev, nextPage, prevPage, setTotal };
+}
+{{else if (eq type "theme")}}
+export function use{{pascalName}}() {
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  }, []);
+
+  return { theme, setTheme, toggleTheme };
+}
+{{else if (eq type "debounce")}}
+export function use{{pascalName}}<T>(value: T, delay: number = 300): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useState(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  });
+
+  return debouncedValue;
+}
+{{else if (eq type "mediaQuery")}}
+import { useState, useEffect } from "react";
+
+export function use{{pascalName}}(query: string): boolean {
+  const [matches, setMatches] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia(query);
+    setMatches(media.matches);
+    const listener = (e: MediaQueryListEvent) => setMatches(e.matches);
+    media.addEventListener("change", listener);
+    return () => media.removeEventListener("change", listener);
+  }, [query]);
+
+  return matches;
+}
+{{else}}
+export function use{{pascalName}}() {
+  // TODO: Implement custom hook
+  return {};
+}
+{{/if}}

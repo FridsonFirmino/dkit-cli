@@ -1,0 +1,17 @@
+import { create } from "zustand";
+
+interface {{pascalName}}State {
+{{#each fields}}
+  {{name}}: {{type}};
+{{/each}}
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
+}
+
+export const use{{pascalName}}Store = create<{{pascalName}}State>((set) => ({
+{{#each fields}}
+  {{name}}: {{defaultValue}},
+{{/each}}
+  setLoading: (loading) => set({ loading }),
+  setError: (error) => set({ error }),
+}));

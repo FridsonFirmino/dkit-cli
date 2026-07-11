@@ -1,0 +1,40 @@
+import { useState } from "react";
+import type { {{pascalName}}, {{pascalName}}FormData } from "./types";
+import { {{camelName}}Schema } from "./schema";
+
+interface Use{{pascalName}}FormOptions {
+  initialData?: Partial<{{pascalName}}>;
+  onSubmit: (data: {{pascalName}}FormData) => Promise<void>;
+}
+
+export function use{{pascalName}}Form({ initialData, onSubmit }: Use{{pascalName}}FormOptions) {
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validate = (data: unknown) => {
+    const result = {{camelName}}Schema.safeParse(data);
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as string;
+        fieldErrors[field] = issue.message;
+      }
+      setErrors(fieldErrors);
+      return false;
+    }
+    setErrors({});
+    return true;
+  };
+
+  const handleSubmit = async (data: {{pascalName}}FormData) => {
+    if (!validate(data)) return;
+    setIsSubmitting(true);
+    try {
+      await onSubmit(data);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return { errors, isSubmitting, handleSubmit, validate };
+}
