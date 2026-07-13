@@ -1,193 +1,291 @@
 # DKIT CLI
 
-**DKIT CLI** is a monorepo-based developer productivity toolkit for Frontend and Mobile projects. It provides project detection, health checks, cleanup utilities, dependency updates, and scaffolding commands for React/Next.js and React Native/Expo.
+**Developer Productivity Toolkit**
 
-## Repository Overview
+DKIT CLI is a developer productivity tool for Frontend and Mobile development. It automates repetitive tasks, standardizes projects, and accelerates environment setup.
 
-This repository is structured as a pnpm workspace with the following packages:
+---
 
-- `packages/core`: CLI infrastructure, project detection, health checks, cleanup, update commands, and cross-package utilities.
-- `packages/shared`: Shared `TypeScript` types, schemas, naming helpers, and constants used across the monorepo.
-- `packages/templates`: Handlebars template renderer, registered helpers, and scaffold template files.
-- `packages/frontend`: Frontend generator commands for React/Next.js applications.
-- `packages/mobile`: Mobile generator commands and environment tooling for Expo/React Native projects.
+## 📖 Usage Documentation
 
-## Root Files
+### Installation
 
-- `package.json`: monorepo root configuration.
-  - Scripts:
-    - `build`: runs `turbo run build`
-    - `dev`: runs `turbo run dev`
-    - `clean`: runs `turbo run clean`
-    - `lint`: runs `turbo run lint`
-    - `typecheck`: runs `turbo run typecheck`
-    - `test`: runs `turbo run test`
-    - `dkit`: runs the built CLI at `packages/core/dist/cli.js`
-- `pnpm-workspace.yaml`: workspace packages include `packages/*`.
-- `turbo.json`: task pipeline configuration for build, dev, clean, lint, typecheck, test.
-- `tsconfig.json`: root TypeScript compiler options.
+```bash
+# Clone the repository
+git clone https://github.com/fridsonfirmino/dkit-cli.git
+cd dkit-cli
 
-## Package Architecture
+# Install dependencies
+pnpm install
 
-### `packages/core`
+# Build all packages
+pnpm build
+```
 
-The core package is the main CLI engine.
+### Quick Start
 
-#### Key files
+Run `dkit` without arguments to open the interactive menu:
 
-- `src/cli.ts`
-  - Defines `dkit` command using `commander`.
-  - Adds subcommands: `detect`, `doctor`, `clean`, `update`, `health`.
-  - Uses `detectProject` and `calculateHealthScore`.
+```bash
+node packages/core/dist/cli.js
+```
 
-- `src/index.ts`
-  - Exports core utilities, detection, display, and command constructors.
+Or use commands directly:
 
-- `src/commands/clean.ts`
-  - Implements the `clean` command.
-  - Determines directories to delete from current project root.
-  - Supports `--all` to include `node_modules`.
-  - Cleans standard build caches and folders.
+### Commands
 
-- `src/commands/doctor.ts`
-  - Implements `doctor` command.
-  - Prints detected project info and health score.
+| Command | Description |
+|---------|-------------|
+| `dkit` | Open interactive menu |
+| `dkit create` | Scaffold a new project (React, Next.js, Expo) |
+| `dkit detect` | Detect current project information |
+| `dkit doctor` | Full project health analysis |
+| `dkit health` | Show project health score |
+| `dkit configure` | Install and configure tools |
+| `dkit generate` | Code generation menu |
+| `dkit clean` | Clean build artifacts |
+| `dkit update` | Update dependencies |
+| `dkit env` | Manage environment variables |
 
-- `src/commands/update.ts`
-  - Implements `update` command.
-  - Uses package manager detection to run `outdated` and optionally update dependencies.
-  - Supports `--check` to only inspect outdated deps.
-  - Handles npm, pnpm, bun, yarn.
+### Examples
 
-- `src/detection/detector.ts`
-  - `detectProject(rootPath)` inspects current directory.
-  - Reads `package.json` safely.
-  - Detects package manager by lockfile.
-  - Detects framework from dependencies: `next`, `expo`, `react-native`, `react`.
-  - Detects project type: `frontend`, `mobile`, `none`.
-  - Detects tools and platform support by dependencies and config files:
-    - Tailwind, Shadcn, ESLint, Prettier, Biome, Storybook, Husky, Commitlint, TanStack Query, Redux, Zustand, Jotai, Firebase, Supabase, Prisma, Sentry, PostHog, Docker, GitHub Actions.
-  - Detects Git status, branch, remote, uncommitted changes.
-  - Detects environment files.
-  - Detects mobile environment specifics: Expo Router, React Navigation, Android SDK, adb, Java, CocoaPods, Xcode.
-  - Detects project structure folders such as `src`, `app`, `pages`, `components`, `features`, `lib`, `hooks`, etc.
-  - Detects TypeScript support via `typescript` dependency or `tsconfig.json`.
+```bash
+# Project creation
+dkit create
+# Follow the interactive prompts to create React, Next.js, or Expo projects
 
-- `src/detection/health.ts`
-  - Contains health checks used by `health` and `doctor`.
-  - Checks include:
-    - TypeScript
-    - ESLint
-    - Prettier
-    - Husky
-    - Git initialization
-    - Tailwind (frontend only)
-    - Storybook (frontend only)
-    - Testing framework (always returns false)
-    - TanStack Query
-    - State management library
-  - Builds a numeric score and recommendations list.
+# Project detection
+dkit detect
+# Shows framework, tools, package manager, git status
 
-- `src/utils/display.ts`
-  - Formats and prints detected project info.
-  - Prints health score and checks with colored output.
-  - Uses shared label mappings from `@dkit/shared`.
+# Health check
+dkit doctor
+# Analyzes TypeScript, ESLint, Prettier, Husky, Git, Tailwind, Storybook,
+# Testing framework, TanStack Query, and state management
 
-- `src/utils/fs.ts`
-  - `ensureDir`, `writeFile`, `fileExists`, `readJson` helpers.
+# Configure tools
+dkit configure
+# Interactive menu to install and configure:
+# - Tailwind CSS, ESLint, Prettier, Husky, TanStack Query
+# - Zustand, Firebase, Supabase
 
-- `src/utils/process.ts`
-  - `runCommand` wrapper.
-  - `getInstallCommand` and `getRunCommand` for `npm`, `pnpm`, `bun`, `yarn`.
+# Or configure a specific tool directly:
+dkit configure tailwind
+dkit configure eslint
+dkit configure husky
 
-### `packages/shared`
+# Code generation
+dkit generate
+# Shows available generators based on project type
 
-Shared definitions for cross-package reuse.
+# Clean build artifacts
+dkit clean          # Clean .next, dist, build, cache
+dkit clean --all    # Also clean node_modules
 
-#### Key files
+# Update dependencies
+dkit update            # Update all dependencies
+dkit update --check    # Only check for outdated packages
 
-- `src/types/index.ts`
-  - Exposes all domain types, options, and interfaces.
-  - Includes detection structures, generator option payloads, and project metadata types.
+# Environment management
+dkit env create     # Create .env.local
+dkit env validate   # Validate environment variables
+dkit env switch     # Switch between development/production
+```
 
-- `src/utils/schemas.ts`
-  - Zod schemas matching the same option shapes for validation.
-  - Includes schemas for generators and project configuration.
+### Interactive Menu
 
-- `src/utils/naming.ts`
-  - String utilities: `toPascalCase`, `toCamelCase`, `toKebabCase`, `toSnakeCase`, `capitalize`, `pluralize`.
+Running `dkit` without arguments opens an interactive menu that:
 
-- `src/constants/defaults.ts`
-  - Default empty detection objects.
-  - Display name maps for frameworks, package managers, and project types.
+1. **Detects your project** automatically (framework, tools, git status)
+2. **Shows health score** with recommendations
+3. **Presents only relevant actions** based on project type
 
-### `packages/templates`
+---
 
-Template rendering package.
+## 🔧 Development Documentation
 
-#### Key files
+### Prerequisites
 
-- `src/index.ts`
-  - Exports renderer and helpers.
+- **Node.js** >= 18.0.0
+- **pnpm** >= 8.0.0 (preferred package manager)
+- Optionally: **Bun** >= 1.0.0
 
-- `src/helpers.ts`
-  - Registers Handlebars helpers:
-    - `toPascalCase`, `toCamelCase`, `toKebabCase`
-    - `eq`, `neq`, `or`, `and`, `unless`
+### Tech Stack
 
-- `src/renderer.ts`
-  - Loads templates from `packages/templates/templates`.
-  - Caches compiled templates.
-  - Exposes `renderTemplate(category, name, data)`.
-  - Exposes `getTemplatePath`.
+| Layer | Technology |
+|-------|-----------|
+| Language | TypeScript |
+| Runtime | Node.js (compatible with Bun) |
+| CLI Framework | Commander.js |
+| Prompts | Clack |
+| Spinner | Ora |
+| Colors | Picocolors |
+| Templates | Handlebars |
+| Build | tsup |
+| Monorepo | Turborepo + pnpm workspaces |
 
-#### Templates present
+### Project Structure
 
-- `component/`
-  - `component.tsx.hbs`
-  - `index.ts.hbs`
-  - `story.tsx.hbs`
-  - `test.tsx.hbs`
-  - `types.ts.hbs`
-- `page/`
-  - `page.tsx.hbs`
-  - `layout.tsx.hbs`
-  - `loading.tsx.hbs`
-  - `error.tsx.hbs`
-  - `actions.ts.hbs`
-- `context/`
-  - `context.tsx.hbs`
-- `hook/`
-  - `hook.ts.hbs`
-- `store/`
-  - `redux.ts.hbs`
-  - `zustand.ts.hbs`
-- `crud/`
-  - `api.ts.hbs`
-  - `form.ts.hbs`
-  - `hooks.ts.hbs`
-  - `schema.ts.hbs`
-  - `types.ts.hbs`
+```
+dkit-cli/
+├── packages/
+│   ├── core/         # CLI entry, project detection, health analysis
+│   │   ├── src/
+│   │   │   ├── cli.ts           # CLI entry point
+│   │   │   ├── commands/        # Command implementations
+│   │   │   ├── detection/       # Project detection engine
+│   │   │   └── utils/           # Shared utilities
+│   │   └── dist/                # Built output
+│   │
+│   ├── frontend/     # React/Next.js generators
+│   │   └── src/
+│   │       └── commands/        # Component, Page, Hook, Context, Store
+│   │
+│   ├── mobile/       # Expo/React Native generators
+│   │   └── src/
+│   │       └── commands/        # Screen, Component, Android, Emulator, Expo
+│   │
+│   ├── shared/       # Types, schemas, naming utilities, constants
+│   │   └── src/
+│   │       ├── types/           # TypeScript interfaces
+│   │       ├── utils/           # Zod schemas, naming helpers
+│   │       └── constants/       # Defaults and display names
+│   │
+│   └── templates/    # Handlebars templates
+│       └── templates/
+│           ├── component/       # React component templates
+│           ├── page/            # Next.js page templates
+│           ├── hook/            # Custom hook templates
+│           ├── context/         # React context templates
+│           ├── store/           # State management templates
+│           ├── crud/            # CRUD generator templates
+│           ├── layout/          # Layout templates
+│           ├── screen/          # Mobile screen templates
+│           └── service/         # API service templates
+│
+├── turbo.json         # Turborepo configuration
+└── pnpm-workspace.yaml
+```
 
-### `packages/frontend`
+### Development
 
-Frontend scaffolding commands.
+```bash
+# Install dependencies
+pnpm install
 
-#### Key files
+# Build all packages
+pnpm build
 
-- `src/index.ts`
-  - Exports create command functions.
+# Build in watch mode
+pnpm dev
 
-- `src/commands/index.ts`
-  - Re-exports command builders.
+# Clean all builds
+pnpm clean
 
-- `src/commands/component.ts`
-  - CLI command `component`.
-  - Prompts for name and options.
-  - Generates component folder and files using templates.
-  - Creates `component.tsx`, `types.ts`, `index.ts`, and optionally test/story files.
-  - Uses Tailwind, CSS Modules, or styled-components flags.
+# Run CLI locally
+node packages/core/dist/cli.js <command>
 
-- `src/commands/page.ts`
-  - CLI command `page`.
-  - Detects Next.js App Router via `project.framework?.name ===
+# Or via pnpm script
+pnpm dkit <command>
+```
+
+### Adding a New Command
+
+1. Create the command file in the appropriate package:
+   - `packages/core/src/commands/` for core commands
+   - `packages/frontend/src/commands/` for frontend generators
+   - `packages/mobile/src/commands/` for mobile generators
+
+2. Export the command factory function:
+   ```typescript
+   export function createMyCommand(): Command {
+     return new Command("my-command")
+       .description("What my command does")
+       .action(() => {
+         // Implementation
+       });
+   }
+   ```
+
+3. Register it in `packages/core/src/cli.ts`:
+   ```typescript
+   import { createMyCommand } from "./commands/my-command.js";
+   program.addCommand(createMyCommand());
+   ```
+
+### Adding New Templates
+
+1. Create a `.hbs` file in the appropriate directory under `packages/templates/templates/`
+2. Register any new helpers in `packages/templates/src/helpers.ts`
+3. Use the template in your command:
+   ```typescript
+   import { renderTemplate } from "@dkit/templates";
+   const content = renderTemplate("category", "template-name", { data });
+   ```
+
+---
+
+## 🚀 Features
+
+### Implemented (v1.0)
+
+- [x] Project detection (framework, tools, git, environment)
+- [x] Health score with recommendations
+- [x] Interactive menu
+- [x] Project scaffolding (React/Vite, Next.js, Expo)
+- [x] Component generation (with tests, Storybook, CSS options)
+- [x] Page generation (with layout, loading, error, actions)
+- [x] Hook generation (fetch, pagination, theme, debounce, mediaQuery)
+- [x] Context generation (theme, auth, user)
+- [x] Store generation (Zustand, Redux Toolkit, Jotai)
+- [x] Mobile screen generation
+- [x] Mobile component generation
+- [x] Android device management (adb)
+- [x] Emulator management
+- [x] Expo commands (prebuild, build, submit)
+- [x] Tool configuration (Tailwind, ESLint, Prettier, Husky, TanStack Query, Zustand, Firebase, Supabase)
+- [x] Build cache cleaning
+- [x] Dependency updates
+- [x] Environment variable management
+- [x] CRUD templates (types, schema, API, hooks, form)
+- [x] API service templates
+- [x] Layout templates
+
+### Roadmap
+
+**v1.1**
+- [ ] Reusable presets (save and reuse project stacks)
+- [ ] Custom component templates
+- [ ] Improved project detection
+
+**v1.2**
+- [ ] AI integration for component generation and error explanation
+- [ ] Migration assistant (React, Next.js, Expo versions)
+
+**v2.0**
+- [ ] Git module (branches, commits, pull requests, changelog)
+- [ ] Backend support (NestJS, Express, Hono)
+
+**v3.0**
+- [ ] DevOps (Docker, GitHub Actions, Vercel, Railway, Render)
+- [ ] Database (Prisma, Drizzle, Supabase)
+
+**v4.0**
+- [ ] Official plugin system
+- [ ] Community template marketplace
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+MIT

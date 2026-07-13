@@ -1,0 +1,17 @@
+export default function {{pascalName}}Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div>
+      {{#if sidebar}}
+      <aside>
+        <nav>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+          </ul>
+        </nav>
+      </aside>
+      {{/if}}
+      <main>{children}</main>
+    </div>
+  );
+}

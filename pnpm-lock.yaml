@@ -20,6 +20,9 @@ importers:
 
   packages/core:
     dependencies:
+      '@clack/prompts':
+        specifier: ^0.10.0
+        version: 0.10.1
       '@dkit/shared':
         specifier: workspace:*
         version: link:../shared
