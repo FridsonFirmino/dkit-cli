@@ -7,20 +7,23 @@ import styled from "styled-components";
 {{#if cssModule}}
 import styles from "./{{name}}.module.css";
 {{/if}}
-{{#if withStorybook}}
-import type { Meta, StoryObj } from "@storybook/react";
-{{/if}}
-{{> componentInterface}}
 
-{{> componentProps}}
+export interface {{pascalName}}Props {}
 
-export function {{pascalName}}({{{#if styledComponents}}}
-  className,
-  ...props
-}: {{pascalName}}Props) {
+export function {{pascalName}}(props: {{pascalName}}Props) {
   return (
-    <{{#if styledComponents}}Styled{{pascalName}}{{else}}div{{/if}}{{#if cssModule}} className={styles.container}{{else if tailwind}} className={cn("", className)}{{else if styledComponents}} className={className}{{/if}} {...props}>
-      {{pascalName}}
-    </{{#if styledComponents}}{{pascalName}}{{else}}div{{/if}}>
+{{#if styledComponents}}
+    <Styled{{pascalName}}>{ {{pascalName}} }</Styled{{pascalName}}>
+{{else}}
+  {{#if cssModule}}
+    <div className={styles.container}>{ {{pascalName}} }</div>
+  {{else}}
+    {{#if tailwind}}
+    <div className={cn("")}>{ {{pascalName}} }</div>
+    {{else}}
+    <div>{ {{pascalName}} }</div>
+    {{/if}}
+  {{/if}}
+{{/if}}
   );
 }

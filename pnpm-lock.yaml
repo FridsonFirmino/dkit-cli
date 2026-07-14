@@ -26,6 +26,9 @@ importers:
       '@dkit/shared':
         specifier: workspace:*
         version: link:../shared
+      '@dkit/templates':
+        specifier: workspace:*
+        version: link:../templates
       commander:
         specifier: ^13.1.0
         version: 13.1.0

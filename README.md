@@ -8,97 +8,135 @@ DKIT CLI is a developer productivity tool for Frontend and Mobile development. I
 
 ## 📖 Usage Documentation
 
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/fridsonfirmino/dkit-cli.git
-cd dkit-cli
-
-# Install dependencies
-pnpm install
-
-# Build all packages
-pnpm build
-```
-
 ### Quick Start
 
-Run `dkit` without arguments to open the interactive menu:
-
 ```bash
-node packages/core/dist/cli.js
-```
+# Clone and build
+git clone https://github.com/fridsonfirmino/dkit-cli.git
+cd dkit-cli
+pnpm install
+pnpm build
 
-Or use commands directly:
+# Run the CLI
+pnpm dkit                # Interactive menu
+pnpm dkit --help         # Full help with examples
+pnpm dkit detect         # Detect current project
+```
 
 ### Commands
 
 | Command | Description |
 |---------|-------------|
-| `dkit` | Open interactive menu |
+| `dkit` | Open interactive menu (auto-detects project) |
 | `dkit create` | Scaffold a new project (React, Next.js, Expo) |
 | `dkit detect` | Detect current project information |
-| `dkit doctor` | Full project health analysis |
+| `dkit doctor` | Full project health analysis with recommendations |
 | `dkit health` | Show project health score |
-| `dkit configure` | Install and configure tools |
+| `dkit configure [tool]` | Install and configure tools |
 | `dkit generate` | Code generation menu |
-| `dkit clean` | Clean build artifacts |
-| `dkit update` | Update dependencies |
-| `dkit env` | Manage environment variables |
+| `dkit component [name]` | Generate a React component |
+| `dkit page [name]` | Generate a Next.js page |
+| `dkit hook [name]` | Generate a custom hook |
+| `dkit context [name]` | Generate a context provider |
+| `dkit store [name]` | Generate a state store |
+| `dkit clean [options]` | Clean build artifacts |
+| `dkit update [options]` | Update dependencies |
+| `dkit env [action]` | Manage environment variables |
 
 ### Examples
 
+#### Project Creation
 ```bash
-# Project creation
 dkit create
-# Follow the interactive prompts to create React, Next.js, or Expo projects
+# Follow the prompts to create React (Vite), Next.js, or Expo projects
+# Optionally initializes git with first commit
+```
 
-# Project detection
+#### Project Detection
+```bash
 dkit detect
-# Shows framework, tools, package manager, git status
+# Shows detected framework, tools, package manager, git status
+# Automatically identifies React, Next.js, Expo, or React Native
+```
 
-# Health check
-dkit doctor
-# Analyzes TypeScript, ESLint, Prettier, Husky, Git, Tailwind, Storybook,
-# Testing framework, TanStack Query, and state management
+#### Health Check
+```bash
+dkit doctor     # Full analysis with recommendations
+dkit health     # Quick health score
+```
 
-# Configure tools
+#### Code Generation
+```bash
+# Components (with tests, Storybook, CSS Modules, Tailwind, Styled Components)
+dkit component Button
+dkit component Card --type feature --no-tests
+dkit component Header --type layout --storybook --css-module
+
+# Pages (Next.js App Router)
+dkit page dashboard
+dkit page settings --no-loading --no-error --actions
+
+# Hooks
+dkit hook useFetch --type fetch
+dkit hook useDebounce --type debounce
+
+# Context Providers
+dkit context Theme --type theme
+dkit context Auth --type auth
+
+# State Stores
+dkit store cart --type zustand
+dkit store user --type redux
+```
+
+#### Tool Configuration
+```bash
+# Interactive menu
 dkit configure
-# Interactive menu to install and configure:
-# - Tailwind CSS, ESLint, Prettier, Husky, TanStack Query
-# - Zustand, Firebase, Supabase
 
-# Or configure a specific tool directly:
+# Direct installation
 dkit configure tailwind
 dkit configure eslint
+dkit configure prettier
 dkit configure husky
+dkit configure tanstack-query
+dkit configure zustand
+dkit configure firebase
+dkit configure supabase
+```
 
-# Code generation
-dkit generate
-# Shows available generators based on project type
+#### Maintenance
+```bash
+dkit clean              # Clean .next, dist, build, cache
+dkit clean --all        # Clean everything including node_modules
+dkit update             # Update all dependencies
+dkit update --check     # Only check for outdated packages
+```
 
-# Clean build artifacts
-dkit clean          # Clean .next, dist, build, cache
-dkit clean --all    # Also clean node_modules
-
-# Update dependencies
-dkit update            # Update all dependencies
-dkit update --check    # Only check for outdated packages
-
-# Environment management
-dkit env create     # Create .env.local
-dkit env validate   # Validate environment variables
-dkit env switch     # Switch between development/production
+#### Environment Variables
+```bash
+dkit env create         # Create .env.local
+dkit env validate       # Validate environment variables
+dkit env switch         # Switch between environments
 ```
 
 ### Interactive Menu
 
 Running `dkit` without arguments opens an interactive menu that:
 
-1. **Detects your project** automatically (framework, tools, git status)
-2. **Shows health score** with recommendations
-3. **Presents only relevant actions** based on project type
+1. **Detects** your project automatically (framework, tools, git status)
+2. **Analyzes** health and shows recommendations
+3. **Presents** only relevant actions based on project type
+4. **Executes** the selected action directly
+
+### Direct Command Format
+
+All generators accept a name argument. If omitted, an interactive prompt asks for it:
+
+```bash
+dkit component         # Prompts for name
+dkit component Button  # Uses "Button" directly
+```
 
 ---
 
@@ -108,7 +146,7 @@ Running `dkit` without arguments opens an interactive menu that:
 
 - **Node.js** >= 18.0.0
 - **pnpm** >= 8.0.0 (preferred package manager)
-- Optionally: **Bun** >= 1.0.0
+- **Bun** >= 1.0.0 (optional, compatible)
 
 ### Tech Stack
 
@@ -129,45 +167,51 @@ Running `dkit` without arguments opens an interactive menu that:
 ```
 dkit-cli/
 ├── packages/
-│   ├── core/         # CLI entry, project detection, health analysis
+│   ├── core/              # CLI entry, commands, detection engine
 │   │   ├── src/
-│   │   │   ├── cli.ts           # CLI entry point
-│   │   │   ├── commands/        # Command implementations
-│   │   │   ├── detection/       # Project detection engine
-│   │   │   └── utils/           # Shared utilities
-│   │   └── dist/                # Built output
+│   │   │   ├── cli.ts              # CLI entry point (all commands)
+│   │   │   ├── commands/
+│   │   │   │   ├── create.ts       # Project scaffolding
+│   │   │   │   ├── configure.ts    # Tool configuration
+│   │   │   │   ├── generate-*.ts   # Code generators
+│   │   │   │   ├── menu.ts         # Interactive menu
+│   │   │   │   ├── env.ts          # Environment management
+│   │   │   │   ├── clean.ts        # Cache cleaning
+│   │   │   │   ├── update.ts       # Dependency updates
+│   │   │   │   └── doctor.ts       # Health analysis
+│   │   │   ├── detection/          # Project detection engine
+│   │   │   └── utils/              # Shared utilities
+│   │   └── dist/                   # Built output
 │   │
-│   ├── frontend/     # React/Next.js generators
-│   │   └── src/
-│   │       └── commands/        # Component, Page, Hook, Context, Store
+│   ├── frontend/          # (Legacy) Frontend-specific commands
+│   │   └── src/commands/  # Previously housed generators
 │   │
-│   ├── mobile/       # Expo/React Native generators
-│   │   └── src/
-│   │       └── commands/        # Screen, Component, Android, Emulator, Expo
+│   ├── mobile/            # Mobile-specific commands
+│   │   └── src/commands/  # Android, emulator, Expo management
 │   │
-│   ├── shared/       # Types, schemas, naming utilities, constants
+│   ├── shared/            # Types, schemas, naming utilities
 │   │   └── src/
 │   │       ├── types/           # TypeScript interfaces
 │   │       ├── utils/           # Zod schemas, naming helpers
-│   │       └── constants/       # Defaults and display names
+│   │       └── constants/       # Defaults, display names
 │   │
-│   └── templates/    # Handlebars templates
+│   └── templates/         # Handlebars code generation templates
 │       └── templates/
 │           ├── component/       # React component templates
 │           ├── page/            # Next.js page templates
 │           ├── hook/            # Custom hook templates
-│           ├── context/         # React context templates
+│           ├── context/         # Context provider templates
 │           ├── store/           # State management templates
 │           ├── crud/            # CRUD generator templates
 │           ├── layout/          # Layout templates
 │           ├── screen/          # Mobile screen templates
 │           └── service/         # API service templates
 │
-├── turbo.json         # Turborepo configuration
-└── pnpm-workspace.yaml
+├── turbo.json              # Turborepo pipeline config
+└── pnpm-workspace.yaml     # Workspace configuration
 ```
 
-### Development
+### Development Workflow
 
 ```bash
 # Install dependencies
@@ -176,31 +220,27 @@ pnpm install
 # Build all packages
 pnpm build
 
-# Build in watch mode
+# Build in watch mode (auto-rebuild on changes)
 pnpm dev
 
-# Clean all builds
-pnpm clean
-
-# Run CLI locally
-node packages/core/dist/cli.js <command>
-
-# Or via pnpm script
+# Run CLI during development
 pnpm dkit <command>
+
+# Clean all build artifacts
+pnpm clean
 ```
 
 ### Adding a New Command
 
-1. Create the command file in the appropriate package:
-   - `packages/core/src/commands/` for core commands
-   - `packages/frontend/src/commands/` for frontend generators
-   - `packages/mobile/src/commands/` for mobile generators
+1. Create the command file in `packages/core/src/commands/`
 
 2. Export the command factory function:
    ```typescript
+   import { Command } from "commander";
+
    export function createMyCommand(): Command {
      return new Command("my-command")
-       .description("What my command does")
+       .description("What it does")
        .action(() => {
          // Implementation
        });
@@ -215,12 +255,16 @@ pnpm dkit <command>
 
 ### Adding New Templates
 
-1. Create a `.hbs` file in the appropriate directory under `packages/templates/templates/`
-2. Register any new helpers in `packages/templates/src/helpers.ts`
-3. Use the template in your command:
+1. Create a `.hbs` file in `packages/templates/templates/<category>/`
+
+2. Template naming convention:
+   - File `component.tsx.hbs` → called with `renderTemplate("component", "component.tsx", data)`
+   - File `hook.ts.hbs` → called with `renderTemplate("hook", "hook.ts", data)`
+
+3. Use the template in a command:
    ```typescript
    import { renderTemplate } from "@dkit/templates";
-   const content = renderTemplate("category", "template-name", { data });
+   const content = renderTemplate("category", "file-name.hbs", { data });
    ```
 
 ---
@@ -231,15 +275,14 @@ pnpm dkit <command>
 
 - [x] Project detection (framework, tools, git, environment)
 - [x] Health score with recommendations
-- [x] Interactive menu
+- [x] Interactive menu with auto-detection
 - [x] Project scaffolding (React/Vite, Next.js, Expo)
 - [x] Component generation (with tests, Storybook, CSS options)
 - [x] Page generation (with layout, loading, error, actions)
 - [x] Hook generation (fetch, pagination, theme, debounce, mediaQuery)
 - [x] Context generation (theme, auth, user)
-- [x] Store generation (Zustand, Redux Toolkit, Jotai)
+- [x] Store generation (Zustand, Redux Toolkit)
 - [x] Mobile screen generation
-- [x] Mobile component generation
 - [x] Android device management (adb)
 - [x] Emulator management
 - [x] Expo commands (prebuild, build, submit)

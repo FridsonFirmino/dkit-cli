@@ -54,6 +54,19 @@ async function main() {
       await showGenerateMenu(detectProject());
     });
 
+  const { createComponentCommand } = await import("./commands/generate-component.js");
+  program.addCommand(createComponentCommand());
+  const { createPageCommand } = await import("./commands/generate-page.js");
+  program.addCommand(createPageCommand());
+  const { createHookCommand } = await import("./commands/generate-hook.js");
+  program.addCommand(createHookCommand());
+  const { createContextCommand } = await import("./commands/generate-context.js");
+  program.addCommand(createContextCommand());
+  const { createStoreCommand } = await import("./commands/generate-store.js");
+  program.addCommand(createStoreCommand());
+  const { createScreenCommand } = await import("./commands/generate-screen.js");
+  program.addCommand(createScreenCommand());
+
   program
     .command("create")
     .description("Scaffold a new project (React, Next.js, Expo)")
@@ -162,8 +175,8 @@ async function main() {
   });
 
   if (process.argv.length <= 2) {
-    const { createMenuCommand } = await import("./commands/menu.js");
-    await createMenuCommand().parseAsync(["node", "dkit", "menu"]);
+    const { runMenu } = await import("./commands/menu.js");
+    await runMenu();
   } else {
     program.parse();
   }

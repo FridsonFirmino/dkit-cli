@@ -31,6 +31,7 @@ export function {{pascalName}}Provider({ children }: {{pascalName}}ProviderProps
 {{#if (eq type "theme")}}
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const toggleTheme = useCallback(() => setTheme((p) => (p === "light" ? "dark" : "light")), []);
+  const contextValue = { theme, setTheme, toggleTheme };
 {{else if (eq type "auth")}}
   const [user, setUser] = useState<unknown>(null);
   const isAuthenticated = !!user;
@@ -39,14 +40,17 @@ export function {{pascalName}}Provider({ children }: {{pascalName}}ProviderProps
     setUser(credentials);
   }, []);
   const logout = useCallback(() => setUser(null), []);
+  const contextValue = { user, isAuthenticated, login, logout };
 {{else if (eq type "user")}}
   const [user, setUser] = useState<unknown>(null);
+  const contextValue = { user, setUser };
 {{else}}
   const [value, setValue] = useState<unknown>(null);
+  const contextValue = { value, setValue };
 {{/if}}
 
   return (
-    <{{pascalName}}Context.Provider value={{{#if (eq type "theme")}}{ theme, setTheme, toggleTheme }{{else if (eq type "auth")}}{ user, isAuthenticated, login, logout }{{else if (eq type "user")}}{ user, setUser }{{else}}{ value, setValue }{{/if}}}>
+    <{{pascalName}}Context.Provider value={contextValue}>
       {children}
     </{{pascalName}}Context.Provider>
   );
