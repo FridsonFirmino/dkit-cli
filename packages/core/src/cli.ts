@@ -162,8 +162,8 @@ async function main() {
   });
 
   if (process.argv.length <= 2) {
-    const { createMenuCommand } = await import("./commands/menu.js");
-    await createMenuCommand().parseAsync(["node", "dkit", "menu"]);
+    const { runMenu } = await import("./commands/menu.js");
+    await runMenu();
   } else {
     program.parse();
   }
