@@ -1,72 +1,33 @@
-import { execSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { select, text, isCancel, confirm } from "@clack/prompts";
 import pc from "picocolors";
-import ora from "ora";
 
-interface CreateOptions {
-  name: string;
-  typescript: boolean;
-  git: boolean;
+function getPkgManager(): "pnpm" | "bun" | "npm" {
+  if (existsSync(join(process.cwd(), "pnpm-lock.yaml"))) return "pnpm";
+  if (existsSync(join(process.cwd(), "bun.lock"))) return "bun";
+  return "npm";
 }
 
-async function createViteProject(dir: string, opts: CreateOptions) {
-  const spinner = ora("Creating React project with Vite...").start();
-  try {
-    const template = opts.typescript ? "react-ts" : "react";
-    execSync(
-      `npm create vite@latest ${dir} -- --template ${template} ${opts.git ? "" : ""}`,
-      { stdio: "pipe" },
-    );
-    spinner.succeed("React project created with Vite.");
-  } catch {
-    spinner.fail("Failed to create React project.");
-    process.exit(1);
-  }
-}
+function getCreateCommand(
+  framework: string,
+  name: string,
+  pkgManager: string,
+): string {
+  const cmds: Record<string, string> = {
+    react: `npm create vite@latest ${name} -- --template react-ts`,
+    nextjs: `npx create-next-app@latest ${name} --ts --eslint --tailwind --src-dir --app --import-alias "@/*"`,
+    expo: `npx create-expo-app@latest ${name}`,
+  };
 
-async function createNextProject(dir: string, opts: CreateOptions) {
-  const spinner = ora("Creating Next.js project...").start();
-  try {
-    const tsFlag = opts.typescript ? "--ts" : "--js";
-    const gitFlag = opts.git ? "" : "--no-git";
-    execSync(
-      `npx create-next-app@latest ${dir} ${tsFlag} --eslint --tailwind --src-dir --app ${gitFlag} --import-alias "@/*" --use-npm`,
-      { stdio: "pipe" },
-    );
-    spinner.succeed("Next.js project created.");
-  } catch {
-    spinner.fail("Failed to create Next.js project.");
-    process.exit(1);
-  }
-}
+  let cmd = cmds[framework];
+  if (!cmd) throw new Error(`Unknown framework: ${framework}`);
 
-async function createExpoProject(dir: string, _opts: CreateOptions) {
-  const spinner = ora("Creating Expo project...").start();
-  try {
-    execSync(`npx create-expo-app@latest ${dir} --template blank-typescript`, {
-      stdio: "pipe",
-    });
-    spinner.succeed("Expo project created.");
-  } catch {
-    spinner.fail("Failed to create Expo project.");
-    process.exit(1);
+  if (pkgManager === "pnpm") {
+    cmd = cmd.replace(/^npm create/, "pnpm create");
   }
-}
 
-async function initGit(dir: string) {
-  const spinner = ora("Initializing git...").start();
-  try {
-    execSync("git init", { cwd: dir, stdio: "pipe" });
-    execSync('git add -A && git commit -m "chore: initial project setup"', {
-      cwd: dir,
-      stdio: "pipe",
-    });
-    spinner.succeed("Git initialized with initial commit.");
-  } catch {
-    spinner.fail("Failed to initialize git.");
-  }
+  return cmd;
 }
 
 export const createProject = async (): Promise<void> => {
@@ -92,13 +53,8 @@ export const createProject = async (): Promise<void> => {
 
   if (isCancel(framework)) process.exit(0);
 
-  const typescript = (await confirm({
-    message: "Use TypeScript?",
-    initialValue: true,
-  })) as boolean;
-
   const initGitRepo = (await confirm({
-    message: "Initialize git?",
+    message: "Initialize git with first commit?",
     initialValue: true,
   })) as boolean;
 
@@ -109,26 +65,35 @@ export const createProject = async (): Promise<void> => {
     process.exit(1);
   }
 
-  switch (framework) {
-    case "react":
-      await createViteProject(name, { name, typescript, git: initGitRepo });
-      break;
-    case "nextjs":
-      await createNextProject(name, { name, typescript, git: initGitRepo });
-      break;
-    case "expo":
-      await createExpoProject(name, { name, typescript, git: initGitRepo });
-      break;
+  const pkgManager = getPkgManager();
+  const cmd = getCreateCommand(framework, name, pkgManager);
+
+  console.log(pc.dim(`\n  Running: ${cmd}\n`));
+
+  const { execSync } = await import("node:child_process");
+
+  try {
+    execSync(cmd, { stdio: "inherit" });
+  } catch {
+    process.exit(1);
   }
 
   if (initGitRepo && !existsSync(join(dir, ".git"))) {
-    await initGit(dir);
+    const spinner = (await import("ora")).default("Initializing git...").start();
+    try {
+      execSync("git init", { cwd: dir, stdio: "pipe" });
+      execSync('git add -A && git commit -m "chore: initial project setup"', {
+        cwd: dir,
+        stdio: "pipe",
+      });
+      spinner.succeed("Git initialized with initial commit.");
+    } catch {
+      spinner.fail("Failed to initialize git.");
+    }
   }
 
   console.log(pc.green(`\n  ✓ Project "${name}" created successfully!\n`));
   console.log(pc.dim(`  cd ${name}`));
-  if (framework !== "expo") {
-    console.log(pc.dim("  npm run dev"));
-  }
+  console.log(pc.dim(`  ${pkgManager} run dev`));
   console.log("");
 };
