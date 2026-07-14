@@ -10,10 +10,9 @@ export async function runMenu(): Promise<void> {
 
   console.clear();
   console.log(pc.bold(pc.cyan("\n  ╔══════════════════════════════════════╗")));
-  console.log(pc.bold(pc.cyan("  ║     DKIT - Developer Productivity  ║")));
-  console.log(pc.bold(pc.cyan("  ║            Toolkit v0.1.0          ║")));
-  console.log(pc.bold(pc.cyan("  ╚══════════════════════════════════════╝")));
-  console.log("");
+  console.log(pc.bold(pc.cyan("    ║     DKIT - Developer Productivity    ║")));
+  console.log(pc.bold(pc.cyan("    ║            Toolkit v0.1.0            ║")));
+  console.log(pc.bold(pc.cyan("    ╚══════════════════════════════════════╝")));
 
   if (project.type !== "none") {
     printProjectInfo(project);
@@ -30,7 +29,10 @@ export async function runMenu(): Promise<void> {
       ...(project.type === "none"
         ? [{ value: "create", label: "Create a new project" }]
         : [
-            { value: "generate", label: "Generate code (component, page, hook, etc.)" },
+            {
+              value: "generate",
+              label: "Generate code (component, page, hook, etc.)",
+            },
             { value: "configure", label: "Configure tools for this project" },
           ]),
       { value: "doctor", label: "Run project health check" },
@@ -38,7 +40,12 @@ export async function runMenu(): Promise<void> {
       { value: "update", label: "Update dependencies" },
       { value: "env", label: "Manage environment variables" },
       ...(project.mobile
-        ? [{ value: "mobile", label: "Mobile commands (android, emulator, expo)" }]
+        ? [
+            {
+              value: "mobile",
+              label: "Mobile commands (android, emulator, expo)",
+            },
+          ]
         : []),
     ],
   });
@@ -85,7 +92,11 @@ export async function runMenu(): Promise<void> {
       break;
     }
     case "mobile": {
-      console.log(pc.dim("\n  Use `dkit android`, `dkit emulator`, or `dkit expo` commands.\n"));
+      console.log(
+        pc.dim(
+          "\n  Use `dkit android`, `dkit emulator`, or `dkit expo` commands.\n",
+        ),
+      );
       break;
     }
   }
