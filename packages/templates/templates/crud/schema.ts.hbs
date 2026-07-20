@@ -1,9 +1,0 @@
-import { z } from "zod";
-
-export const {{camelName}}Schema = z.object({
-{{#each fields}}
-  {{name}}: z.{{zodType}}{{#unless required}}.optional(){{/unless}},
-{{/each}}
-});
-
-export type {{pascalName}}FormData = z.infer<typeof {{camelName}}Schema>;

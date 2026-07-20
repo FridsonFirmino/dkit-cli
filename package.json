@@ -1,29 +1,32 @@
 {
-  "name": "dkit-cli",
-  "version": "0.1.0",
-  "private": true,
-  "packageManager": "pnpm@10.33.0",
-  "description": "Developer Productivity Toolkit - Automate repetitive tasks, standardize projects, and accelerate environment setup for Frontend and Mobile development",
+  "name": "dkit",
+  "version": "1.0.0",
+  "description": "CLI moderna para automatizar tarefas em projetos frontend existentes",
+  "module": "src/index.ts",
   "type": "module",
-  "engines": {
-    "node": ">=18.0.0",
-    "bun": ">=1.0.0"
+  "private": true,
+  "bin": {
+    "dkit": "./src/index.ts"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "clean": "turbo run clean",
-    "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
-    "dkit": "node packages/core/dist/cli.js"
+    "dev": "bun run src/index.ts",
+    "start": "bun run src/index.ts",
+    "build": "bun build ./src/index.ts --outdir ./dist --target bun",
+    "typecheck": "tsc --noEmit",
+    "lint": "bun run typecheck"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "turbo": "^2.4.0",
-    "typescript": "^5.7.0"
-  }
+    "@types/bun": "latest",
+    "@types/node": "^26.1.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.7.0",
+    "commander": "^15.0.0"
+  },
+  "trustedDependencies": [
+    "@clack/prompts"
+  ]
 }
