@@ -41,7 +41,8 @@ program
    $ ${c.cyan}dkit doctor${c.reset}
    $ ${c.cyan}dkit context Auth${c.reset}
    $ ${c.cyan}dkit hook usePagination${c.reset}
-   $ ${c.cyan}dkit feature users${c.reset}\n`,
+   $ ${c.cyan}dkit feature users${c.reset}
+ ${c.cyan}Repositorio:${c.reset} ${c.blue}https://github.com/FridsonFirmino/dkit-cli${c.reset}\n`,
   );
 
 program

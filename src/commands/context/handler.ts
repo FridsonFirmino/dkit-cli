@@ -32,4 +32,5 @@ export async function handleContext(info: ProjectInfo, contextName: string): Pro
   }
 
   logger.success(`Context ${pascalName} criado em ${baseDir}`)
+  logger.repo()
 }
