@@ -153,9 +153,3 @@ O detector (`core/detector`) identifica automaticamente:
 3. Faça suas alterações
 4. Execute `bun run typecheck` para verificar tipos
 5. Commit e abra um Pull Request
-
----
-
-<div align="center">
-  <a href="https://github.com/FridsonFirmino/dkit-cli">Repositorio</a>
-</div>
