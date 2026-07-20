@@ -29,4 +29,5 @@ export async function handleProvider(info: ProjectInfo, providerName: string): P
   }
 
   logger.success(`Provider ${pascalName} criado em ${baseDir}`)
+  logger.repo()
 }

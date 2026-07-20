@@ -27,11 +27,12 @@ export async function handleArchitecture(info: ProjectInfo): Promise<void> {
   const dirs = ARCHITECTURE_STRUCTURES[selected]
   const baseDir = info.hasSrc ? join(info.projectRoot, 'src') : info.projectRoot
 
-  logger.info(`Criando arquitetura ${architecture} em ${baseDir}`)
+  logger.info(`Criando arquitetura ${selected} em ${baseDir}`)
 
   for (const dir of dirs) {
     filesystem.ensureDir(join(baseDir, dir))
   }
 
-  logger.success(`Arquitetura ${architecture} criada com sucesso`)
+  logger.success(`Arquitetura ${selected} criada com sucesso`)
+  logger.repo()
 }

@@ -19,4 +19,5 @@ export async function handleService(info: ProjectInfo, serviceName: string): Pro
 
   filesystem.write(join(serviceDir, fileName), content)
   logger.success(`Service ${serviceName} criado em ${join(serviceDir, fileName)}`)
+  logger.repo()
 }

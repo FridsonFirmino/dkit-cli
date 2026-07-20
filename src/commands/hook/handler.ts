@@ -19,4 +19,5 @@ export async function handleHook(info: ProjectInfo, hookName: string): Promise<v
 
   filesystem.write(join(hookDir, fileName), content)
   logger.success(`Hook ${hookName} criado em ${join(hookDir, fileName)}`)
+  logger.repo()
 }
