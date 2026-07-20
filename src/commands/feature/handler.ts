@@ -18,4 +18,5 @@ export async function handleFeature(info: ProjectInfo, featureName: string): Pro
   }
 
   logger.success(`Feature ${featureName} criada em ${featuresDir}`)
+  logger.repo()
 }

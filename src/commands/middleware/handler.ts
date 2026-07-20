@@ -19,4 +19,5 @@ export async function handleMiddleware(info: ProjectInfo, middlewareName: string
 
   filesystem.write(join(middlewareDir, fileName), content)
   logger.success(`Middleware ${middlewareName} criado em ${join(middlewareDir, fileName)}`)
+  logger.repo()
 }

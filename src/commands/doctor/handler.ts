@@ -40,4 +40,6 @@ export async function handleDoctor(info: ProjectInfo): Promise<void> {
   if (info.config.tsconfig) logger.success('TypeScript Config')
   if (info.config.eslint) logger.success('ESLint')
   if (info.config.prettier) logger.success('Prettier')
+
+  logger.repo()
 }
